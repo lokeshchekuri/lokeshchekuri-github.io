@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .container {
+        border: 2px solid rgb(20, 216, 241);
+        margin: 100px 150px;
+        padding: 80px;
+        width: 42%;
+        border-radius: 30px;
+        background-color: bisque;
+    }
+        .container h1 {
+        text-align: center;
+    }
+
+    .container button {
+        display: block;
+        width: 75%;
+        margin: 20px auto;
+    }
+    .form input {
+        text-align: center;
+        display: block;
+        width: 500px;
+        padding: 1px;
+        border: 2px solid black;
+        margin: 11px auto;
+        font-size: 25px;
+        border-radius: 5px;
+    }
+    .btn {
+        margin: 0px 9px;
+        background-color: rgb(239, 198, 61);
+        color: white;
+        padding: 4px 14px;
+        border: 2px solid grey;
+        border-radius: 10px;
+        font-size: 20px;
+    }
+
+    .btn:hover {
+        background-color: rgb(31, 30, 30);
+    }
+    .cont input{
+  position: absolute;
+  font-size: 10px;
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Registration Form</h1>
+        <form>
+            <div class="form">
+                <input type="text" required name=""id="name" placeholder="Enter your Name">
+            </div>
+            <div class="form">
+                <input type="email" name=""required placeholder="Enter your Email Id"id="email">
+            </div>
+            <div class="form">
+                <input type="text" name="" placeholder="Enter your Password"id="password">
+            </div>
+            <div class="form">
+                <input type="date" name="" placeholder="DDMMYYYY"id="dob">
+            </div>
+            <div class="form">
+                <input type="checkbox"id="accept">
+                <label class="cont">Accept Terms & Conditions
+                    <span class="check"></span>
+                </label>
+            </div>
+
+            <button type="submit"class="btn">Submit</button>
+        </form>
+    </div>
+    <script>
+        let email = document.getElementById('email');
+      email.addEventListener('input',()=> email_validation(email));
+
+      var x_obj = document.getElementById("dob");
+      
+      x_obj.addEventListener('input', ()=> myFunction(x_obj));
+
+      function email_validation(ele){
+        if(ele.validity.typeMismatch){
+          ele.setCustomValidity("Format of email is not correct");
+          ele.reportValidity();
+        }
+        else{
+          ele.setCustomValidity("");
+        }
+      }
+
+      
+
+
+      function Timediff(user_dob, today) {  
+        const date1_to_utc = Date.UTC(user_dob.getFullYear(), user_dob.getMonth(), user_dob.getDate());
+        const date2_to_utc = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+          day = 1000*3600*24;
+        return(date2_to_utc - date1_to_utc)/day
+}
+      
+      
+      function myFunction(x_obj) {
+        
+        let user_dob = new Date(x_obj.value);
+        let today_date = new Date();
+        //let year1 = user_dob.getFullYear();
+        
+        //let year2 = today_date.getFullYear();
+        time_difference = Timediff(user_dob,today_date);
+
+        console.log(time_difference);
+        if ((time_difference < 6570) || (time_difference>=20075)){
+          x_obj.setCustomValidity("You does not belong to 18 - 55 age group");
+          x_obj.reportValidity();
+      }
+      else{
+        x_obj.setCustomValidity('');
+      }
+      
+}
+
+
+      let retrieve_data = () => {
+          let entries = localStorage.getItem("user_entry_details");
+          if(entries){
+            entries = JSON.parse(entries);
+          }
+          else{
+            entries = [];
+          }
+          return entries;
+        }
+
+
+       let formdetails = document.getElementById("form-details");
+
+        let users = retrieve_data();
+
+        let displayEntries = () => {
+          let entries = retrieve_data();
+
+          let table_entries = entries.map((entry)=>{
+            let namecell = `<td> ${entry.name} </td>`;
+            let emailcell = `<td> ${entry.email} </td>`;
+            let passwordcell = `<td> ${entry.password} </td>`;
+            let dobcell = `<td> ${entry.dob} </td>`;
+            let acceptedcell = `<td> ${entry.accepted} </td>`;
+
+            let row = `<tr>${namecell} ${emailcell} ${passwordcell} ${dobcell} ${acceptedcell}</tr>`;
+            return row;
+          }).join("\n");
+
+
+
+          let table = `<table style = 'width: 50%'><tr><th>Name</th><th>Email</th><th>Password</th><th>dob</th><th>Accepted terms?</th></tr> ${table_entries} </table>`;
+          let details = document.getElementById("user-entries");
+          details.innerHTML = table;
+        }
+
+        let save_details = (event) => {
+          event.preventDefault();
+          let name = document.getElementById("username").value;
+          console.log(name);
+          let email = document.getElementById("email").value;
+          let password = document.getElementById("password").value;
+          let dob = document.getElementById("dob").value;
+          let accepted = document.getElementById("accept").checked;
+
+          let entry_obj = {
+             name,
+             email,
+             password,
+             dob,
+             accepted
+          };
+
+          users.push(entry_obj);
+          localStorage.setItem("user_entry_details", JSON.stringify(users));
+
+          displayEntries();
+
+        };
+        
+        
+        formdetails.addEventListener('submit', save_details);
+        
+        displayEntries();
+    </script>
+</body>
+</html>
